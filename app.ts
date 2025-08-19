@@ -157,12 +157,20 @@ class SurfApp {
             const videoItem = document.createElement('div');
             videoItem.className = 'video-item';
             videoItem.dataset.index = index.toString();
+            videoItem.dataset.videoId = short.id;
 
-            const iframe = document.createElement('iframe');
-            iframe.src = this.getEmbedUrl(short.id, index === 0);
-            iframe.allow = 'autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-            iframe.allowFullscreen = true;
-            iframe.dataset.videoId = short.id;
+            // Create placeholder for iframe - will be loaded lazily
+            const iframePlaceholder = document.createElement('div');
+            iframePlaceholder.className = 'iframe-placeholder';
+            iframePlaceholder.style.width = '100%';
+            iframePlaceholder.style.height = '100%';
+            iframePlaceholder.style.backgroundColor = '#000';
+            iframePlaceholder.style.display = 'flex';
+            iframePlaceholder.style.alignItems = 'center';
+            iframePlaceholder.style.justifyContent = 'center';
+            iframePlaceholder.style.color = '#666';
+            iframePlaceholder.style.fontSize = '18px';
+            iframePlaceholder.innerHTML = '🌊 Loading...';
 
             const overlay = document.createElement('div');
             overlay.className = 'video-overlay';
@@ -178,31 +186,61 @@ class SurfApp {
                 </div>
             `;
 
-            videoItem.appendChild(iframe);
+            videoItem.appendChild(iframePlaceholder);
             videoItem.appendChild(overlay);
             this.videoContainer.appendChild(videoItem);
         });
         
+        // Load initial videos
+        this.loadVideosInRange(0, 2);
         this.observeVideoChanges();
         this.setupActionButtons();
     }
 
-    private getEmbedUrl(videoId: string, autoplay: boolean): string {
-        const autoplayParam = autoplay ? '1' : '0';
-        return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=${autoplayParam}&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&mute=0&origin=${window.location.origin}&enablejsapi=0`;
+    private loadVideosInRange(startIndex: number, endIndex: number): void {
+        for (let i = startIndex; i <= endIndex && i < this.shorts.length; i++) {
+            this.loadVideoAtIndex(i);
+        }
+    }
+
+    private loadVideoAtIndex(index: number): void {
+        const videoItem = this.videoContainer.children[index] as HTMLElement;
+        if (!videoItem) return;
+
+        const placeholder = videoItem.querySelector('.iframe-placeholder');
+        if (!placeholder) return; // Already loaded
+
+        const short = this.shorts[index];
+        const iframe = document.createElement('iframe');
+        iframe.src = this.getEmbedUrl(short.id, index === this.currentIndex);
+        iframe.allow = 'autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.dataset.videoId = short.id;
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+
+        // Replace placeholder with actual iframe
+        videoItem.replaceChild(iframe, placeholder);
     }
 
     private observeVideoChanges(): void {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                const iframe = entry.target.querySelector('iframe') as HTMLIFrameElement;
-                const videoId = iframe.dataset.videoId;
+                const videoIndex = parseInt(entry.target.getAttribute('data-index')!);
                 
                 if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-                    iframe.src = this.getEmbedUrl(videoId!, true);
-                    this.currentIndex = parseInt(entry.target.getAttribute('data-index')!);
-                } else {
-                    iframe.src = this.getEmbedUrl(videoId!, false);
+                    this.currentIndex = videoIndex;
+                    
+                    // Load current video and surrounding videos
+                    const bufferSize = 2;
+                    const startIndex = Math.max(0, videoIndex - bufferSize);
+                    const endIndex = Math.min(this.shorts.length - 1, videoIndex + bufferSize);
+                    
+                    this.loadVideosInRange(startIndex, endIndex);
+                    
+                    // Update video states
+                    this.updateVideoStates();
                 }
             });
         }, {
@@ -213,6 +251,25 @@ class SurfApp {
             observer.observe(item);
         });
     }
+
+    private updateVideoStates(): void {
+        // Update autoplay states for all loaded videos
+        document.querySelectorAll('.video-item iframe').forEach((element) => {
+            const iframe = element as HTMLIFrameElement;
+            const videoItem = iframe.closest('.video-item') as HTMLElement;
+            const videoIndex = parseInt(videoItem.dataset.index!);
+            const videoId = iframe.dataset.videoId!;
+            const isActive = videoIndex === this.currentIndex;
+            
+            iframe.src = this.getEmbedUrl(videoId, isActive);
+        });
+    }
+
+    private getEmbedUrl(videoId: string, autoplay: boolean): string {
+        const autoplayParam = autoplay ? '1' : '0';
+        return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=${autoplayParam}&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&mute=0&origin=${window.location.origin}&enablejsapi=0`;
+    }
+
 
     private setupEventListeners(): void {
         let startY = 0;
@@ -283,7 +340,6 @@ class SurfApp {
                     break;
             }
         });
-
     }
 
     private setupActionButtons(): void {
@@ -309,6 +365,13 @@ class SurfApp {
         this.isLoading = true;
 
         this.currentIndex = (this.currentIndex + 1) % this.shorts.length;
+        
+        // Preload videos around the new current video
+        const bufferSize = 2;
+        const startIndex = Math.max(0, this.currentIndex - bufferSize);
+        const endIndex = Math.min(this.shorts.length - 1, this.currentIndex + bufferSize);
+        this.loadVideosInRange(startIndex, endIndex);
+        
         this.scrollToVideo(this.currentIndex);
 
         setTimeout(() => {
@@ -321,6 +384,13 @@ class SurfApp {
         this.isLoading = true;
 
         this.currentIndex = this.currentIndex === 0 ? this.shorts.length - 1 : this.currentIndex - 1;
+        
+        // Preload videos around the new current video
+        const bufferSize = 2;
+        const startIndex = Math.max(0, this.currentIndex - bufferSize);
+        const endIndex = Math.min(this.shorts.length - 1, this.currentIndex + bufferSize);
+        this.loadVideosInRange(startIndex, endIndex);
+        
         this.scrollToVideo(this.currentIndex);
 
         setTimeout(() => {

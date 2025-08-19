@@ -30,10 +30,6 @@ body {
   -ms-overflow-style: none;
 }
 
-#video-container::-webkit-scrollbar {
-  display: none;
-}
-
 .video-item {
   position: relative;
   width: 100%;

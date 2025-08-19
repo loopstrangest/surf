@@ -49,7 +49,7 @@ body {
   height: 100%;
   border: none;
   object-fit: cover;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .video-item {
@@ -212,7 +212,7 @@ body {
   }
 
   .video-overlay {
-    bottom: 7.5vh;
+    bottom: 15vh;
     right: 15px;
   }
 
@@ -242,7 +242,7 @@ body {
   }
 
   .video-overlay {
-    bottom: 6vh;
+    bottom: 18vh;
     right: 12px;
   }
 

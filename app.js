@@ -143,10 +143,16 @@ class SurfApp {
             videoItem.className = 'video-item';
             videoItem.dataset.index = index.toString();
             const iframe = document.createElement('iframe');
-            iframe.src = this.getEmbedUrl(short.id, index === 0);
-            iframe.allow = 'autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+            // Set src after other attributes to prevent loading issues
+            setTimeout(() => {
+                iframe.src = this.getEmbedUrl(short.id, index === 0);
+            }, 100);
+            iframe.allow = 'autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
             iframe.allowFullscreen = true;
+            iframe.loading = 'lazy';
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
             iframe.dataset.videoId = short.id;
+            iframe.style.pointerEvents = 'auto';
             const overlay = document.createElement('div');
             overlay.className = 'video-overlay';
             const heartClass = short.liked ? 'icon liked' : 'icon';
@@ -169,7 +175,8 @@ class SurfApp {
     }
     getEmbedUrl(videoId, autoplay) {
         const autoplayParam = autoplay ? '1' : '0';
-        return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=${autoplayParam}&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&mute=0&origin=${window.location.origin}&enablejsapi=0`;
+        const origin = encodeURIComponent(window.location.origin);
+        return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=${autoplayParam}&loop=1&playlist=${videoId}&controls=1&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=0&mute=0&origin=${origin}&enablejsapi=1&playsinline=1&widget_referrer=${origin}`;
     }
     observeVideoChanges() {
         const observer = new IntersectionObserver((entries) => {
@@ -196,17 +203,21 @@ class SurfApp {
         let currentY = 0;
         let isScrolling = false;
         this.videoContainer.addEventListener('touchstart', (e) => {
+            // Don't interfere with iframe interactions
+            if (e.target.tagName === 'IFRAME') {
+                return;
+            }
             startY = e.touches[0].clientY;
             isScrolling = true;
         });
         this.videoContainer.addEventListener('touchmove', (e) => {
-            if (!isScrolling)
+            if (!isScrolling || e.target.tagName === 'IFRAME')
                 return;
             currentY = e.touches[0].clientY;
             e.preventDefault();
         });
-        this.videoContainer.addEventListener('touchend', () => {
-            if (!isScrolling)
+        this.videoContainer.addEventListener('touchend', (e) => {
+            if (!isScrolling || e.target.tagName === 'IFRAME')
                 return;
             isScrolling = false;
             const deltaY = startY - currentY;

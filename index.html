@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data:; frame-src https://www.youtube-nocookie.com; media-src *; connect-src 'self' https://www.youtube-nocookie.com; font-src https://cdnjs.cloudflare.com;"
+    />
+    <title>🌊 Surf</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="video-container"></div>
+      <div id="share-popup" class="share-popup hidden">
+        <div class="popup-content">
+          <span class="popup-surfer">🌊</span>
+          <span class="popup-text">Link Copied</span>
+          <span class="popup-surfer">🌊</span>
+        </div>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

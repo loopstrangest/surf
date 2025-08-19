@@ -1,0 +1,8 @@
+Create a web app using typescript.
+The web app will be a clone of tiktok / instagram reels.
+Use all of the youtube shorts provided in shorts.txt
+This app should be optimized for mobile devices.
+This app should use vertical scrolling as mobile apps do to navigate between videos.
+Shorts should be ordered randomly.
+Each displayed short should autoplay and loop automatically and play their original audio.
+The app should display full screen (on mobile) and autoplay with an overlay on the bottom right to like and share the video.

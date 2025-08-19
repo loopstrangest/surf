@@ -1,0 +1,262 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+
+#video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#video-container::-webkit-scrollbar {
+  display: none;
+}
+
+.video-item {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-item iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.video-item {
+  position: relative;
+}
+
+.video-overlay {
+  position: absolute;
+  bottom: 7.5vh;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  pointer-events: auto;
+}
+
+.action-btn {
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.action-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.action-btn::-moz-focus-inner {
+  border: 0;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-btn:active {
+  animation: press-animation 0.3s ease;
+}
+
+.action-btn .icon {
+  font-size: 36px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  transition: all 0.2s ease;
+}
+
+.action-btn .icon.liked {
+  color: #ff1493;
+}
+
+@keyframes press-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+.share-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+  transition: all 0.3s ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+.share-popup.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -60%);
+}
+
+.popup-content {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  min-width: 300px;
+}
+
+.popup-surfer {
+  font-size: 32px;
+}
+
+.popup-text {
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .video-overlay {
+    bottom: 10vh;
+    right: 40px;
+  }
+
+  .action-btn .icon {
+    font-size: 40px;
+  }
+
+  .actions {
+    gap: 30px;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .video-overlay {
+    bottom: 8vh;
+    right: 30px;
+  }
+
+  .action-btn .icon {
+    font-size: 38px;
+  }
+
+  .actions {
+    gap: 25px;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .action-btn .icon {
+    font-size: 32px;
+  }
+
+  .actions {
+    gap: 20px;
+  }
+
+  .video-overlay {
+    bottom: 7.5vh;
+    right: 15px;
+  }
+
+  .popup-content {
+    padding: 20px 32px;
+    gap: 16px;
+    min-width: 250px;
+  }
+
+  .popup-surfer {
+    font-size: 28px;
+  }
+
+  .popup-text {
+    font-size: 24px;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .action-btn .icon {
+    font-size: 28px;
+  }
+
+  .actions {
+    gap: 18px;
+  }
+
+  .video-overlay {
+    bottom: 6vh;
+    right: 12px;
+  }
+
+  .popup-content {
+    padding: 16px 24px;
+    gap: 12px;
+    min-width: 200px;
+  }
+
+  .popup-surfer {
+    font-size: 24px;
+  }
+
+  .popup-text {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "surf",
+  "version": "1.0.0",
+  "description": "A TikTok/Instagram Reels clone web app",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -s . -p 8000",
+    "dev": "serve -s . -p 8000",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "serve": "^14.2.0"
+  },
+  "dependencies": {}
+}

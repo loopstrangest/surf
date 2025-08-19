@@ -277,18 +277,39 @@ class SurfApp {
         let isScrolling = false;
 
         this.videoContainer.addEventListener('touchstart', (e) => {
+            // Don't interfere with button interactions
+            const target = e.target as HTMLElement;
+            if (target.closest('.action-btn') || target.closest('.video-overlay')) {
+                return;
+            }
+            
             startY = e.touches[0].clientY;
             isScrolling = true;
         });
 
         this.videoContainer.addEventListener('touchmove', (e) => {
             if (!isScrolling) return;
+            
+            // Don't interfere with button interactions
+            const target = e.target as HTMLElement;
+            if (target.closest('.action-btn') || target.closest('.video-overlay')) {
+                return;
+            }
+            
             currentY = e.touches[0].clientY;
             e.preventDefault();
         });
 
-        this.videoContainer.addEventListener('touchend', () => {
+        this.videoContainer.addEventListener('touchend', (e) => {
             if (!isScrolling) return;
+            
+            // Don't interfere with button interactions
+            const target = e.target as HTMLElement;
+            if (target.closest('.action-btn') || target.closest('.video-overlay')) {
+                isScrolling = false;
+                return;
+            }
+            
             isScrolling = false;
 
             const deltaY = startY - currentY;

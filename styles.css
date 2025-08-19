@@ -75,12 +75,15 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0;
+  padding: 12px;
   outline: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
 }
 
 .action-btn:focus {
